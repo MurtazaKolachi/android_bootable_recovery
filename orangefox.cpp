@@ -673,7 +673,7 @@ int Fox_Prepare_Update_Binary(const char *path, ZipArchiveHandle Zip)
 		  
 	          // check for embedded recovery installs
 	          if  (
-	                 (TWFunc::CheckWord(FOX_TMP_PATH, "/dev/block/bootdevice/by-name/recovery")
+	                 ((TWFunc::CheckWord(FOX_TMP_PATH, "/dev/block/bootdevice/by-name/recovery") || TWFunc::CheckWord(FOX_TMP_PATH, "/dev/block/by-name/recovery"))
 	              && (TWFunc::CheckWord(FOX_TMP_PATH, "recovery.img") || TWFunc::CheckWord(FOX_TMP_PATH, "twrp.img"))
 	              && (zip_EntryExists(Zip, "recovery.img") || zip_EntryExists(Zip, "twrp.img") || zip_EntryExists(Zip, "recovery/twrp.img") || zip_EntryExists(Zip, "recovery/recovery.img"))
 	                 )) {

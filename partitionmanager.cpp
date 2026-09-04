@@ -289,6 +289,8 @@ bool Do_Disable_AVB2(string File_Name, char Disable_Flags, bool Display_Info) {
 	int _ret;
 	bool ret = false;
 	string dev = "/dev/block/bootdevice/by-name/";
+	if (!TWFunc::Path_Exists(dev))
+		dev = "/dev/block/by-name/";
 
 	FILE *vbmetaFile = fopen((dev + File_Name).c_str(), "rb+");
 	if (vbmetaFile != NULL) {
@@ -329,6 +331,8 @@ bool TWPartitionManager::Disable_AVB2(bool Display_Info) {
 	bool vb = false;
 	bool vb_sys = false;
 	string dev = "/dev/block/bootdevice/by-name/";
+	if (!TWFunc::Path_Exists(dev))
+		dev = "/dev/block/by-name/";
 
 	string part = "vbmeta";
 	if (TWFunc::Path_Exists(dev + part)) {

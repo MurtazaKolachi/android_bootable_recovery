@@ -260,7 +260,7 @@ uint64_t tmp;
 /* return whether there is a real vendor partition */
 bool TWFunc::Has_Vendor_Partition(void)
 {
-   if (TWFunc::Path_Exists ("/dev/block/bootdevice/by-name/vendor"))
+   if (TWFunc::Path_Exists ("/dev/block/bootdevice/by-name/vendor") || TWFunc::Path_Exists ("/dev/block/by-name/vendor"))
        return true;
    else
       return false;
