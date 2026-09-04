@@ -1258,7 +1258,11 @@ void DataManager::SetDefaultValues()
   mPersist.SetValue(TW_TIME_ZONE_GUISEL, OF_DEFAULT_TIMEZONE);
   mPersist.SetValue(TW_TIME_ZONE_GUIOFFSET, "0");
   mPersist.SetValue(TW_TIME_ZONE_GUIDST, "1");
-  mPersist.SetValue(TW_AUTO_REFLASHTWRP_VAR, "1");
+  #ifdef OF_NO_REFLASH_CURRENT_ORANGEFOX
+	mPersist.SetValue(TW_AUTO_REFLASHTWRP_VAR, "0");
+  #else
+	mPersist.SetValue(TW_AUTO_REFLASHTWRP_VAR, "1");
+  #endif
 
   // avb2.0 disable
   // by patching boot image
