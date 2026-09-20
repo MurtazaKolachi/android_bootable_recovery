@@ -1,5 +1,5 @@
 /*
-	Copyright (C) 2021-2025 OrangeFox Recovery Project
+	Copyright (C) 2021-2026 OrangeFox Recovery Project
 	This file is part of the OrangeFox Recovery Project.
 	
 	OrangeFox is free software: you can redistribute it and/or modify
@@ -53,6 +53,10 @@ func fox_globalFlags(ctx android.BaseContext) []string {
 		foxflags = append(foxflags, "-DFOX_USE_DATA_RECOVERY_FOR_SETTINGS=1")
 		foxflags = append(foxflags, "-DFOX_SETTINGS_ROOT_DIRECTORY=\"/data/recovery\"")
 		foxflags = append(foxflags, "-DFOX_MISCELLANEOUS_ROOT_DIRECTORY=\"/data/recovery\"")
+	}
+
+	if ctx.AConfig().Getenv("FOX_NO_BLANK_DT2W") != "" {
+		foxflags = append(foxflags, "-DFOX_NO_BLANK_DT2W="+"\""+ctx.AConfig().Getenv("FOX_NO_BLANK_DT2W")+"\"")
 	}
 
 	return foxflags
