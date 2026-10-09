@@ -152,7 +152,15 @@ GUIListBox::GUIListBox(xml_node<>* node) : GUIScrollList(node)
 
 	// Get the data for the list
 	child = FindNode(node, "listitem");
-	if (!child) return;
+	if (!child) {
+		// The FBE user picker is populated dynamically rather than from
+		// <listitem> nodes.  Build it here as well as on variable changes so
+		// that opening "Decrypt Users" always shows the users discovered
+		// during FBE setup.
+		if (mVariable == "tw_crypto_user_id_list")
+			CreateEncryptUsersList();
+		return;
+	}
 	while (child) {
 		ListItem item;
 
