@@ -1732,6 +1732,15 @@ bool TWPartition::Mount(bool Display_Error) {
 	if (!exfat_mounted &&
 		mount(Actual_Block_Device.c_str(), Mount_Point.c_str(), mount_fs.c_str(), flags, Mount_Options.c_str()) != 0 &&
 		mount(Actual_Block_Device.c_str(), Mount_Point.c_str(), mount_fs.c_str(), flags, NULL) != 0) {
+		if (Current_File_System == "erofs" && TWFunc::Path_Exists("/system/bin/erofsfuse")) {
+			string cmd = "/system/bin/erofsfuse -o ro,allow_other " + Actual_Block_Device + " " + Mount_Point;
+			LOGINFO("Kernel EROFS mount failed; trying userspace fallback: '%s'\n", cmd.c_str());
+			if (TWFunc::Exec_Cmd(cmd) == 0 && Is_Mounted()) {
+				LOGINFO("Mounted '%s' as EROFS through FUSE\n", Mount_Point.c_str());
+				goto exit;
+			}
+			LOGINFO("Userspace EROFS mount failed for '%s'\n", Mount_Point.c_str());
+		}
 #ifdef TW_NO_EXFAT_FUSE
 		if (Current_File_System == "exfat") {
 			LOGINFO("Mounting exfat failed, trying vfat...\n");
