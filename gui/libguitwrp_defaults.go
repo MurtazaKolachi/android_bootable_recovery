@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path"
+	"path/filepath"
 	"strconv"
 	"strings"
 )
@@ -42,6 +43,9 @@ func printCustomThemeWarning(theme string, location string) {
 
 func copyThemeResources(ctx android.BaseContext, dirs []string, files []string) {
 	outDir := ctx.Config().Getenv("OUT")
+	if !filepath.IsAbs(outDir) {
+		outDir = filepath.Join(android.AbsSrcDirForExistingUseCases(), outDir)
+	}
 	twRes := outDir + "/recovery/root/twres/"
 	os.MkdirAll(twRes, os.ModePerm)
 	recoveryDir := getRecoveryAbsDir(ctx)
@@ -77,7 +81,7 @@ func copyThemeResources(ctx android.BaseContext, dirs []string, files []string) 
 		}
 	}
 
-	_props := [3]string{"TW_CUSTOM_BATTERY_POS", "TW_CUSTOM_CPU_POS", "TW_CUSTOM_CLOCK_POS" }
+	_props := [3]string{"TW_CUSTOM_BATTERY_POS", "TW_CUSTOM_CPU_POS", "TW_CUSTOM_CLOCK_POS"}
 	props := [3]string{"0", "0", "0"}
 	for i, item := range _props {
 		if getMakeVars(ctx, item) != "" {
@@ -102,12 +106,12 @@ func copyThemeResources(ctx android.BaseContext, dirs []string, files []string) 
 		if i == "ui.xml" {
 
 			for _, line := range strings.Split(string(data), "\n") {
-		                if strings.Contains(line, "name=\"font_m\"") {
-		                      fontsize, err = strconv.Atoi(strings.Split(line, "\"")[5])
-		                       if err != nil {
-		                               fmt.Println(err)
-		                               return
-		                       }
+				if strings.Contains(line, "name=\"font_m\"") {
+					fontsize, err = strconv.Atoi(strings.Split(line, "\"")[5])
+					if err != nil {
+						fmt.Println(err)
+						return
+					}
 				}
 				if strings.Contains(line, "resolution") {
 					width, err = strconv.Atoi(strings.Split(line, "\"")[1])
@@ -116,36 +120,36 @@ func copyThemeResources(ctx android.BaseContext, dirs []string, files []string) 
 						return
 					}
 				}
-		        }
+			}
 
-			var cpusize int = (fontsize * 5) + (width/100)
-			var clocksize int = (fontsize * 4) + (width/100)
-			var batterysize int = (fontsize * 6) - (width/100)
+			var cpusize int = (fontsize * 5) + (width / 100)
+			var clocksize int = (fontsize * 4) + (width / 100)
+			var batterysize int = (fontsize * 6) - (width / 100)
 			var pos_clock_24 string = props[2]
 			for j := 0; j < len(props); j++ {
 				if props[j] == "left" {
-					props[j] = strconv.Itoa(width/50)
+					props[j] = strconv.Itoa(width / 50)
 					if _props[j] == "TW_CUSTOM_CLOCK_POS" {
 						pos_clock_24 = props[j]
 					}
 				} else if props[j] == "center" {
 					if _props[j] == "TW_CUSTOM_BATTERY_POS" {
-						props[j] = strconv.Itoa( (width/2) - (batterysize*43/100) )
+						props[j] = strconv.Itoa((width / 2) - (batterysize * 43 / 100))
 					} else if _props[j] == "TW_CUSTOM_CLOCK_POS" {
-						pos := (width/2) - (clocksize*45/100)
+						pos := (width / 2) - (clocksize * 45 / 100)
 						props[j] = strconv.Itoa(pos)
-						pos_clock_24 = strconv.Itoa( pos * 31/30 )
+						pos_clock_24 = strconv.Itoa(pos * 31 / 30)
 					} else if _props[j] == "TW_CUSTOM_CPU_POS" {
-						props[j] = strconv.Itoa( (width/2) - (cpusize*41/100) )
+						props[j] = strconv.Itoa((width / 2) - (cpusize * 41 / 100))
 					}
 				} else if props[j] == "right" {
 					if _props[j] == "TW_CUSTOM_BATTERY_POS" {
-						props[j] = strconv.Itoa( width - batterysize )
+						props[j] = strconv.Itoa(width - batterysize)
 					} else if _props[j] == "TW_CUSTOM_CLOCK_POS" {
 						props[j] = strconv.Itoa(width - clocksize)
 						pos_clock_24 = props[j]
 					} else if _props[j] == "TW_CUSTOM_CPU_POS" {
-						props[j] = strconv.Itoa( width - cpusize )
+						props[j] = strconv.Itoa(width - cpusize)
 					}
 				}
 			}
@@ -164,7 +168,7 @@ func copyThemeResources(ctx android.BaseContext, dirs []string, files []string) 
 		}
 		// Custom position for status bar items - end
 
-		err = ioutil.WriteFile(twRes + i, []byte(newFile), 0)
+		err = ioutil.WriteFile(twRes+i, []byte(newFile), 0)
 		if err != nil {
 			fmt.Println(err)
 			return
@@ -174,6 +178,9 @@ func copyThemeResources(ctx android.BaseContext, dirs []string, files []string) 
 
 func copyCustomTheme(ctx android.BaseContext, customTheme string) {
 	outDir := ctx.Config().Getenv("OUT")
+	if !filepath.IsAbs(outDir) {
+		outDir = filepath.Join(android.AbsSrcDirForExistingUseCases(), outDir)
+	}
 	twRes := outDir + "/recovery/root/twres/"
 	os.MkdirAll(twRes, os.ModePerm)
 	fileDest := twRes + path.Base(customTheme)
@@ -272,7 +279,6 @@ func copyTheme(ctx android.BaseContext) bool {
 
 func globalFlags(ctx android.BaseContext) []string {
 	var cflags []string
-
 
 	if getMakeVars(ctx, "AB_OTA_UPDATER") == "true" {
 		cflags = append(cflags, "-DAB_OTA_UPDATER=1")
